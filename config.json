@@ -1,0 +1,18 @@
+{
+  "serial":
+  [
+    {
+      "port": "/dev/ttyUSB0",
+      "speed": 38400
+    }
+  ],
+  "mqtt":
+  {
+    "mqttserver": "mqtt.liberiot.org",
+    "mqttport": 3001,
+    "mqttmaintopic": "liberiot",
+    "userkey": "02A456CB02A456CB02A456CB",
+    "gatewaykey": "02A456CB02A456CB02A456CB"
+  }
+}
+
