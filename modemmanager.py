@@ -74,7 +74,7 @@ class ModemManager():
             # MQTT client
             self.mqtt_client = MqttClient(mqtt_server, mqtt_port, mqtt_topic, user_key, gateway_key)
             # Declare receiving callback function
-            self.mqtt_client.set_rx_callback()
+            self.mqtt_client.set_rx_callback(self.mqtt_packet_received)
             
         except StationException as ex:
             ex.show()

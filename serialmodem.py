@@ -91,7 +91,7 @@ class SerialModem:
             return True
         
         self._sermode = SerialModem.Mode.COMMAND
-        response = self.runAtCommand("+++", 5000)
+        response = self.run_at_command("+++", 5000)
 
         if response is not None:
             if response[:2] == "OK":
@@ -155,7 +155,7 @@ class SerialModem:
         self.__atresponse_received = False
         # Send command via serial
         if self._serport is None:
-            raise SwapException("Port " + self.portname + " is not open")
+            raise StationException("Port " + self.portname + " is not open")
 
         # Skip wireless packets
         self._atresponse = "("
@@ -187,12 +187,12 @@ class SerialModem:
         """
         # Check format
         if value > 0xFF:
-            raise SwapException("Frequency channels must be 1-byte length")
+            raise StationException("Frequency channels must be 1-byte length")
         # Switch to command mode if necessary
         if self._sermode == SerialModem.Mode.DATA:
-            self.goToCommandMode()
+            self.enter_command_mode()
         # Run AT command
-        response =  self.runAtCommand("ATCH=" + "{0:02X}".format(value) + "\r")
+        response =  self.run_at_command("ATCH=" + "{0:02X}".format(value) + "\r")
         if response is None:
             return False
         if response[0:2] == "OK":
@@ -209,10 +209,10 @@ class SerialModem:
         """
         # Check format
         if value > 0xFFFF:
-            raise SwapException("Synchronization words must be 2-byte length")
+            raise StationException("Synchronization words must be 2-byte length")
         # Switch to command mode if necessary
         if self._sermode == SerialModem.Mode.DATA:
-            self.goToCommandMode()
+            self.enter_command_mode()
         # Run AT command
         response = self.runAtCommand("ATSW=" + "{0:04X}".format(value) + "\r")
         if response is None:
@@ -232,12 +232,12 @@ class SerialModem:
         """
         # Check format
         if value > 0xFF:
-            raise SwapException("Device addresses must be 1-byte length")
+            raise StationException("Device addresses must be 1-byte length")
         # Switch to command mode if necessary
         if self._sermode == SerialModem.Mode.DATA:
-            self.goToCommandMode()
+            self.enter_command_mode()
         # Run AT command
-        response = self.runAtCommand("ATDA=" + "{0:02X}".format(value) + "\r")
+        response = self.run_at_command("ATDA=" + "{0:02X}".format(value) + "\r")
         if response is None:
             return False
         if response[0:2] == "OK":
@@ -267,7 +267,7 @@ class SerialModem:
         
         @param portname: Name/path of the serial port
         @param speed: Serial baudrate in bps
-        @param verbose: Print out SWAP traffic (True or False)
+        @param verbose: Print out RF traffic (True or False)
         """
         # Serial mode (command or data modes)
         self._sermode = SerialModem.Mode.DATA
@@ -290,7 +290,7 @@ class SerialModem:
             # Open serial port
             self._serport = SerialPort(self.portname, self.portspeed, verbose)
             # Define callback function for incoming serial packets
-            self._serport.set_rx_callback(self._serial_packet_received)
+            self._serport.set_rx_callback(self.serial_packet_received)
             # Run serial port thread
             self._serport.start()
                
@@ -304,48 +304,48 @@ class SerialModem:
                     self.reset()
                     soft_reset = True
                 elif soft_reset and elapsed > 10:
-                    raise SwapException("Unable to reset serial modem")
+                    raise StationException("Unable to reset serial modem")
 
             # Retrieve modem settings
             # Switch to command mode
-            if not self.goToCommandMode():
-                raise SwapException("Modem is unable to enter command mode")
+            if not self.enter_command_mode():
+                raise StationException("Modem is unable to enter command mode")
     
             # Hardware version
-            response = self.runAtCommand("ATHV?\r")
+            response = self.run_at_command("ATHV?\r")
             if response is None:
-                raise SwapException("Unable to retrieve Hardware Version from serial modem")
+                raise StationException("Unable to retrieve Hardware Version from serial modem")
             self.hwversion = long(response, 16)
     
             # Firmware version
-            response = self.runAtCommand("ATFV?\r")
+            response = self.run_at_command("ATFV?\r")
             if response is None:
-                raise SwapException("Unable to retrieve Firmware Version from serial modem")
+                raise StationException("Unable to retrieve Firmware Version from serial modem")
             self.fwversion = long(response, 16)
     
             # Frequency channel
-            response = self.runAtCommand("ATCH?\r")
+            response = self.run_at_command("ATCH?\r")
             if response is None:
-                raise SwapException("Unable to retrieve Frequency Channel from serial modem")
+                raise StationException("Unable to retrieve Frequency Channel from serial modem")
             ## Frequency channel of the serial gateway
             self.freq_channel = int(response, 16)
     
             # Synchronization word
-            response = self.runAtCommand("ATSW?\r")
+            response = self.run_at_command("ATSW?\r")
             if response is None:
-                raise SwapException("Unable to retrieve Synchronization Word from serial modem")
+                raise StationException("Unable to retrieve Synchronization Word from serial modem")
             ## Synchronization word of the serial gateway
             self.syncword = int(response, 16)
     
             # Device address
-            response = self.runAtCommand("ATDA?\r")
+            response = self.run_at_command("ATDA?\r")
             if response is None:
-                raise SwapException("Unable to retrieve Device Address from serial modem")
+                raise StationException("Unable to retrieve Device Address from serial modem")
             ## Device address of the serial gateway
             self.devaddress = int(response, 16)
     
             # Switch to data mode
-            self.goToDataMode()
+            self.enter_data_mode()
         except:
             raise
 

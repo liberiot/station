@@ -46,7 +46,8 @@ class MqttClient(object):
 
         # Subscribing in on_connect() means that if we lose the connection and
         # reconnect then subscriptions will be renewed.
-        client.subscribe(self.TOPIC_CONTROL + "/#")   # Control topic    
+        topic = self.TOPIC_CONTROL + "/#"
+        client.subscribe(topic)   # Control topic    
 
 
     def on_message(self, client, userdata, msg):
@@ -54,7 +55,7 @@ class MqttClient(object):
         Callback function: message published from server
         """
         if self._packet_received is not None:
-            self._packet_received()
+            self._packet_received(msg.payload)
 
 
     def publish_network_status(self, message):
@@ -119,9 +120,9 @@ class MqttClient(object):
         self.mqtt_port = mqtt_port
         
         ## MQTT topics
-        self.TOPIC_NETWORK = mqtt_topic + "/" + user_key + "/" + gateway_key + "/" + "network"
-        self.TOPIC_CONTROL = mqtt_topic + "/" + user_key + "/" + gateway_key + "/" + "control"
-        self.TOPIC_GATEWAY = mqtt_topic + "/" + user_key + "/" + gateway_key + "/" + "gateway"
+        self.TOPIC_NETWORK = str(mqtt_topic + "/" + user_key + "/" + gateway_key + "/" + "network")
+        self.TOPIC_CONTROL = str(mqtt_topic + "/" + user_key + "/" + gateway_key + "/" + "control")
+        self.TOPIC_GATEWAY = str(mqtt_topic + "/" + user_key + "/" + gateway_key + "/" + "gateway")
         
         ## MQTT client
         self.mqtt_client = mqtt.Client()
