@@ -66,7 +66,6 @@ def signal_handler(signal, frame):
     """
     Handle signal received
     """
-    swap_manager.stop()
     sys.exit(0)
 
 
