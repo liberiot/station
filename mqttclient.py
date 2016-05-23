@@ -64,9 +64,11 @@ class MqttClient(object):
         
         @param message text to be transmitted via MQTT
         """
+        # Extract device address
+        device_address = message[6:30]
         self.publish_lock.acquire()
         try:
-            self.mqtt_client.publish(self.TOPIC_NETWORK, payload=message, qos=0, retain=False)
+            self.mqtt_client.publish(self.TOPIC_NETWORK + "/" + device_address, payload=message, qos=0, retain=False)
             
         finally:
             self.publish_lock.release()      
