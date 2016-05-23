@@ -28,6 +28,7 @@ from config import Config
 from modemmanager import ModemManager
 from stationexception import StationException
 import signal
+import os
 import sys
 
 
@@ -49,7 +50,8 @@ class Station():
         
         ## Config file
         try:
-            config = Config(Station.CONFIG_FILE)
+            cfg_location = os.path.join(os.path.dirname(sys.argv[0]), Station.CONFIG_FILE)
+            config = Config(cfg_location)
             
             # for each serial port
             for port_config in config.serial_ports:
