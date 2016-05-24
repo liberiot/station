@@ -25,11 +25,8 @@ __date__  ="Apr 23, 2016"
 #########################################################################
 
 from stationexception import StationException
-
 import paho.mqtt.client as mqtt
 import threading
-import json
-import os
 import time
 
 
@@ -47,7 +44,8 @@ class MqttClient(object):
         # Subscribing in on_connect() means that if we lose the connection and
         # reconnect then subscriptions will be renewed.
         topic = self.TOPIC_CONTROL + "/#"
-        client.subscribe(topic)   # Control topic    
+        client.subscribe(topic)   # Control topic
+        self.publish_gateway_status("CONNECTED")
 
 
     def on_message(self, client, userdata, msg):
