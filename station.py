@@ -56,7 +56,7 @@ class Station():
             # for each serial port
             for port_config in config.serial_ports:
                 # Create and start serial modem
-                modem_manager = ModemManager(port_config.name, port_config.speed, True, config.mqtt_server, config.mqtt_port, config.mqtt_topic, config.user_key, config.gateway_key)
+                modem_manager = ModemManager(port_config.name, port_config.speed, True, config.mqtt_server, config.mqtt_port, config.mqtt_topic, config.user_key, config.gateway_key, config.coordinates)
                 # Append modem to list
                 self.modem_managers.append(modem_manager)
                 

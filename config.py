@@ -26,6 +26,8 @@ __date__  ="$Apr 22, 2016$"
 
 from stationexception import StationException
 import json
+import re, uuid
+
 
 class SerialConfig:
     """
@@ -53,9 +55,11 @@ class Config:
         self.serial_ports = []
         
         ## MQTT information
-        self.config_mqtt_server = None
-        self.config_mqtt_port = None
-        self.config_mqtt_topic = None
+        self.mqtt_server = None
+        self.mqtt_port = None
+        self.mqtt_topic = None
+        self.user_key = None
+        self.coordinates = None
         
         ## Config file
         try:
@@ -63,14 +67,20 @@ class Config:
             config = json.load(config_file)
             config_serial = config["serial"]
             config_mqtt = config["mqtt"]
+            config_coord = config["coord"]
             config_file.close()
             
             self.mqtt_server = config_mqtt["mqttserver"]
             self.mqtt_port = config_mqtt["mqttport"]
             self.mqtt_topic = config_mqtt["mqttmaintopic"]
             self.user_key = config_mqtt["userkey"]
-            self.gateway_key = config_mqtt["gatewaykey"]
-            
+                        
+            # Take gateway ID from MAC address
+            self.gateway_key = ''.join(re.findall('..', '%012X' % uuid.getnode())) 
+
+            # Coordinates
+            self.coordinates = (config_coord["latitude"], config_coord["longitude"]);
+
             # for each serial port
             for port in config_serial:
                 if "port" in port and "speed" in port:

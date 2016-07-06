@@ -46,6 +46,8 @@ class MqttClient(object):
         topic = self.TOPIC_CONTROL + "/#"
         client.subscribe(topic)   # Control topic
         self.publish_gateway_status("CONNECTED")
+        
+        self.publish_gateway_coord()
 
 
     def on_message(self, client, userdata, msg):
@@ -86,6 +88,20 @@ class MqttClient(object):
             self.publish_lock.release()
             
 
+    def publish_gateway_coord(self):
+        """
+        Publish gateway location
+        """
+        self.publish_lock.acquire()
+        try:
+            topic = self.TOPIC_GATEWAY + "/coord"
+            coordinates = str(self.coordinates[0]) + ", " + str(self.coordinates[1])
+            self.mqtt_client.publish(topic, payload=coordinates, qos=0, retain=False)
+            
+        finally:
+            self.publish_lock.release()
+            
+            
     def stop(self):
         """
         Stop MQTT client
@@ -102,7 +118,7 @@ class MqttClient(object):
         self._packet_received = funct
         
         
-    def __init__(self, mqtt_server, mqtt_port, mqtt_topic, user_key, gateway_key):
+    def __init__(self, mqtt_server, mqtt_port, mqtt_topic, user_key, gateway_key, coordinates):
         """
         Constructor
         
@@ -111,6 +127,7 @@ class MqttClient(object):
         @param mqtt_topic Main MQTT topic
         @param user_key User key
         @param gateway_key gateway key
+        @param coordinates latitude,longitude
         """
         ## Callback
         self._packet_received = None
@@ -118,6 +135,9 @@ class MqttClient(object):
         ## MQTT server information
         self.mqtt_server = mqtt_server
         self.mqtt_port = mqtt_port
+        
+        ## Gateway coordinates
+        self.coordinates = coordinates
         
         ## MQTT topics
         self.TOPIC_NETWORK = str(mqtt_topic + "/" + user_key + "/" + gateway_key + "/" + "network")

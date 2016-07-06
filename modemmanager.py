@@ -52,7 +52,7 @@ class ModemManager():
         self.modem.send(packet)
         
         
-    def __init__(self, portname, speed, verbose, mqtt_server, mqtt_port, mqtt_topic, user_key, gateway_key):
+    def __init__(self, portname, speed, verbose, mqtt_server, mqtt_port, mqtt_topic, user_key, gateway_key, coordinates):
         """
         Class constructor
         
@@ -64,6 +64,7 @@ class ModemManager():
         @param mqtt_topic Main MQTT topic
         @param user_key User key
         @param gateway_key gateway key
+        @param coordinates gateway latitude-longitude
         """
         try:
             # Create and start serial modem
@@ -72,7 +73,7 @@ class ModemManager():
             self.modem.set_rx_callback(self.serial_packet_received)
             
             # MQTT client
-            self.mqtt_client = MqttClient(mqtt_server, mqtt_port, mqtt_topic, user_key, gateway_key)
+            self.mqtt_client = MqttClient(mqtt_server, mqtt_port, mqtt_topic, user_key, gateway_key, coordinates)
             # Declare receiving callback function
             self.mqtt_client.set_rx_callback(self.mqtt_packet_received)
             
