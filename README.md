@@ -7,3 +7,7 @@ Python dependencies:
 * paho-mqtt
 * pyserial
 
+This package can be installed under Debian-like distros with:
+
+sudo sh debian-install.sh
+
