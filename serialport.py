@@ -70,7 +70,7 @@ class SerialPort(threading.Thread):
                                 if self.serial_received is not None:
                                     try:
                                         self.serial_received(strBuf)
-                                    except SwapException as ex:
+                                    except StationException as ex:
                                         ex.display()
                             elif ch != '\n':
                                 # Append char at the end of the buffer (list)
@@ -156,7 +156,7 @@ class SerialPort(threading.Thread):
         
         @param portname: Name/path of the serial port
         @param speed: Serial baudrate in bps
-        @param verbose: Print out SWAP traffic (True or False)
+        @param verbose: Print out GWAP traffic (True or False)
         """
         threading.Thread.__init__(self)
         ## Name(path) of the serial port
